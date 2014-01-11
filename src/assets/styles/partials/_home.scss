@@ -1,0 +1,47 @@
+@import "compass/css3/border-radius";
+
+#home {
+
+  #intro,
+  #portfolio {
+    overflow:hidden; 
+    width: 100%;
+    height: 100%;
+    position: fixed;
+  }
+
+  #intro {
+    background: transparent url('../images/sf2.jpg') no-repeat center;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+
+    .welcome {
+      $height: 400px;
+      position: absolute;
+      top: 50%;
+      height: $height;
+      width: 100%;
+      margin-top: -$height/2;
+      text-align: center;
+      color: white;
+      text-transform: uppercase;
+      z-index: 10;
+
+      h1 {
+        span {
+          font-family: "Roboto Slab";
+          display: block;
+          line-height: 0.8em;
+        }
+      }
+    }
+
+    #bg-intro {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  #portfolio {}
+}
