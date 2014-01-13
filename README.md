@@ -4,10 +4,9 @@ Particle Angular Seed
 Simple Angular Seed for my client side needs.
 
 Features
-=====================
+--------
 
-AngularJS
----------
+### AngularJS
 [Amazing clientside framework](http://angularjs.org/) highly suited for web application development.
 
 No jQuery
