@@ -3,7 +3,7 @@
 /**
  * General Utility Services
  */
-angular.module('common.utils', [])
+angular.module('particle.common.utils', [])
   
   // Allows lodash to be injected
   .factory('_', function () {

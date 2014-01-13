@@ -4,7 +4,7 @@
  * Attach to any element that needs the skrollr functionality
  */
 
-angular.module('common.directives.skrollr', [])
+angular.module('particle.common.directives.skrollr', [])
   .directive('skrollr', function () {
 
     var _skrollr = skrollr.get();
@@ -15,7 +15,7 @@ angular.module('common.directives.skrollr', [])
       elements.push(el);
       var children = el.childNodes;
       for (var i=0; i < children.length; i++) {
-        if (children[i].nodeType == 1) {
+        if (children[i].nodeType === 1) {
           elements = getNodes(children[i], elements);
         }
       }

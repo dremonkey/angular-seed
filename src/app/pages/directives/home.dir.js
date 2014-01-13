@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('home.directives', [])
-  .directive('homeIntro', function () {
+angular.module('particle.pages.directives', [])
+  .directive('home', function () {
     var directiveDefinitionObject = {
 
       priority: 10,

@@ -1,10 +1,11 @@
-.sass-cache/*
 node_modules/*
 src/bower_components/*
+src/components/*
 
 # System Files
 .DS_Store
 
 # Generated Files
 dist/*
-src/.tmp/*
+.tmp/*
+.sass-cache/*

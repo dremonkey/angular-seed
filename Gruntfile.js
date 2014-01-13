@@ -25,14 +25,13 @@ var paths = {
     }
   },
 
-  // Server Directory
-  srv: {
-    tld: path.normalize(__dirname + '../../server')
-  },
-
   // Compiled Assets Directory
   compiled: {
-    tld: __dirname + '/src/.tmp' // directory path to top level
+    tld: __dirname + '/.tmp' // directory path to top level
+  },
+
+  test: {
+    tld: __dirname + '/test' // directory path to top level
   },
 
   // Distribution Directory and Paths
@@ -43,6 +42,9 @@ var paths = {
       scripts: '<%= paths.dist.tld %>/scripts',
       styles: '<%= paths.dist.tld %>/styles',
       fonts: '<%= paths.dist.tld %>/fonts'
+    },
+    files: {
+      templates: ['<%= paths.dist.tld %>/app/**/*.tpl.html'], // angular templates
     }
   },
 
@@ -56,48 +58,124 @@ var paths = {
 
 module.exports = function (grunt) {
 
-  /**
-   * Register all Grunt Tasks
-   */
+  // Load grunt tasks automatically
+  require('load-grunt-tasks')(grunt);
 
-  // For Heroku - task format is 'heroku:env' where env is the NODE_ENV variable
-  grunt.registerTask('heroku:production', 'dist');
-
-  // Run 'grunt dev' for live-reloading development environment
-  grunt.registerTask('dev', ['build:dev', 'concurrent:dev', 'watch']);
-
-  // Run 'grunt dist' to build and run the distribution environment
-  grunt.registerTask('dist', ['build:dist', 'concurrent:dist', 'optimize']);
-
-  // Run 'grunt heroku' to prepare the client files for deployment to heroku
-  grunt.registerTask('heroku', ['dist', 'clean:heroku', 'copy:heroku']);
-
-  // Clean, validate & compile web-accessible resources
-  grunt.registerTask('build:dev', ['clean:dev', 'jshint', 'ngtemplates:dev']);
-  grunt.registerTask('build:dist', ['clean:dist', 'jshint', 'copy', 'ngtemplates:dist']);
-
-  // Optimize pre-built, web-accessible resources for production, primarily 'rev' and 'usemin'
-  grunt.registerTask('optimize', ['useminPrepare', 'concat', 'ngmin', 'uglify', 'rev', 'usemin']);
+  // Time how long tasks take. Can help when optimizing build times
+  require('time-grunt')(grunt);
 
 
   /**
-   * Grunt Configurations
+   * Define the configuration for all the tasks
    */
-
   grunt.initConfig({
 
     paths: paths,
 
-    pkg: grunt.file.readJSON('package.json'),
+    // Files to watch for changes in order to make the browser reload
+    watch: {
+      js: {
+        files: [
+          '<%= paths.client.files.scripts %>', // app scripts
+          '<%= paths.compiled.tld %>/scripts/{,*/}*.js', // compiled scripts
+        ],
+        tasks: ['newer:jshint:all'],
+        options: {
+          livereload: true
+        }
+      },
+      jsTest: {
+        files: ['test/spec/{,*/}*.js'],
+        tasks: ['newer:jshint:test', 'karma']
+      },
+      compass: {
+        files: ['<%= paths.client.dirs.styles %>/{,*/}*.{scss,sass}'],
+        tasks: ['compass:server'],
+      },
+      gruntfile: {
+        files: ['Gruntfile.js']
+      },
+      livereload: {
+        options: {
+          livereload: liveReloadPort
+        },
+        files: [
+          '<%= paths.client.files.index %>', // client side index file
+          '<%= paths.client.dirs.images %>/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+          '<%= paths.compiled.tld %>/styles/{,*/}*.css', // compiled styles
+        ]
+      },
+      // recompile angular templates
+      ngtemplates: {
+        files: ['<%= paths.client.files.templates %>'],
+        tasks: ['clean:ngtemplates', 'ngtemplates:server']
+      }
+    },
 
-    banner: grunt.file.read('banner.txt'),
+    // The actual grunt server settings
+    connect: {
+      options: {
+        port: 9000,
+        // Change this to '0.0.0.0' to access the server from outside.
+        hostname: 'localhost',
+        livereload: liveReloadPort
+      },
+      livereload: {
+        options: {
+          open: true,
+          base: [
+            // Directories to serve static files from
+            '<%= paths.compiled.tld %>',
+            '<%= paths.client.tld %>',
+            '<%= paths.client.tld %>/assets'
+          ]
+        }
+      },
+      test: {
+        options: {
+          port: 9001,
+          base: [
+            // Directories to serve static files from
+            '<%= paths.compiled.tld %>',
+            '<%= paths.test.tld %>',
+            '<%= paths.client.tld %>',
+            '<%= paths.client.tld %>/assets'
+          ]
+        }
+      },
+      dist: {
+        options: {
+          // Directories to serve static files from
+          base: '<%= paths.dist.tld %>'
+        }
+      }
+    },
 
-    // Wipe the compiled files and/or build directory
+    // Check javascript for errors
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish')
+      },
+      all: [
+        'Gruntfile.js',
+        '<%= paths.client.files.scripts %>',
+        '!<%= paths.client.tld %>/components/**/*'
+      ],
+      test: {
+        options: {
+          jshintrc: 'test/.jshintrc'
+        },
+        src: ['test/spec/{,*/}*.js']
+      }
+    },
+
+    // Empties folders to start fresh
     clean: {
       options: {
         force: true // lets us delete stuff outside the current working directory
       },
-      dev: {
+      server: {
         files: '<%= paths.compiled.tld %>'
       },
       dist: {
@@ -105,8 +183,7 @@ module.exports = function (grunt) {
           dot: true,
           src: [
             '<%= paths.compiled.tld %>/*',
-            '<%= paths.dist.tld %>/*',
-            '!<%= paths.dist.tld %>/.git*'
+            '<%= paths.dist.tld %>/*'
           ]
         }]
       },
@@ -119,48 +196,27 @@ module.exports = function (grunt) {
       ngtemplates: '<%= paths.compiled.tld %>/scripts/*.templates.js'
     },
 
-    // Files to watch for changes in order to make the browser reload
-    watch: {
-      compass: {
-        files: ['<%= paths.client.dirs.styles %>/{,*/}*.{scss,sass}'],
-        tasks: ['compass:dev']
+    // Add vendor prefixed styles
+    autoprefixer: {
+      options: {
+        browsers: ['last 1 version']
       },
-
-      dev: {
-        options: {
-          livereload: liveReloadPort
-        },
-        files: [
-          '<%= paths.client.files.index %>', // client side index file
-          '<%= paths.client.files.scripts %>', // client side scripts
-          '<%= paths.client.dirs.images %>/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-          '<%= paths.compiled.tld %>/scripts/{,*/}*.js', // compiled scripts
-          '<%= paths.compiled.tld %>/styles/{,*/}*.css', // compiled styles
-
-          // TODO figure out how to move this into the server directory and combine watch tasks
-          // '<%= paths.srv.tld %>/api/**/*.js' // server files
-        ]
-      },
-
-      // Angular templates need to be recompiled
-      ngtemplates: {
-        files: [
-          '<%= paths.client.files.templates %>' // angular template files
-        ],
-        tasks: ['clean:ngtemplates', 'ngtemplates:dev']
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= paths.compiled.tld %>/styles/',
+          src: '{,*/}*.css',
+          dest: '<%= paths.compiled.tld %>/styles/'
+        }]
       }
     },
 
-    // Check javascript for errors
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc'
-      },
-      all: [
-        'Gruntfile.js',
-        '<%= paths.client.files.scripts %>',
-        '!<%= paths.client.tld %>/bower_components/**/*'
-      ]
+    // Automatically inject Bower components into the app
+    'bower-install': {
+      app: {
+        html: '<%= paths.client.files.index %>',
+        ignorePath: 'src/',
+      }
     },
 
     // Compass SASS -> CSS Compiler
@@ -169,13 +225,15 @@ module.exports = function (grunt) {
         sassDir: '<%= paths.client.dirs.styles %>',
         imagesDir: '<%= paths.client.dirs.images %>',
         fontsDir: '<%= paths.client.dirs.fonts %>',
-        importPath: '<%= paths.client.tld %>/bower_components',
+        importPath: '<%= paths.client.tld %>/components',
         httpImagesPath: '/images',
         httpGeneratedImagesPath: '/images/generated',
         httpFontsPath: '/styles/fonts',
-        relativeAssets: false
+        relativeAssets: false,
+        assetCacheBuster: false,
+        // raw: 'Sass::Script::Number.precision = 10\n'
       },
-      dev: {
+      server: {
         options: {
           debugInfo: true,
           cssDir: '<%= paths.compiled.tld %>/styles',
@@ -184,7 +242,8 @@ module.exports = function (grunt) {
       },
       dist: {
         options: {
-          cssDir: '<%= paths.dist.dirs.styles %>',
+          // cssDir: '<%= paths.dist.dirs.styles %>',
+          cssDir: '<%= paths.compiled.tld %>/styles',
           generatedImagesDir: '<%= paths.dist.dirs.images %>/generated',
           environment: 'production'
         }
@@ -193,42 +252,66 @@ module.exports = function (grunt) {
 
     // Handle cache busting for static files
     rev: {
-      dist: {
-        files: {
-          src: [
-            '<%= paths.dist.dirs.scripts %>/{,*/}*.js',
-            '<%= paths.dist.dirs.styles %>/{,*/}*.css',
-            '<%= paths.dist.dirs.images %>/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-            '<%= paths.dist.dirs.fonts %>/*'
-          ]
-        }
-      }
+      images: '<%= paths.dist.dirs.images %>/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+      js: '<%= paths.dist.dirs.scripts %>/{,*/}*.js',
+      css: '<%= paths.dist.tld %>/styles/{,*/}*.css',
+      other: '<%= paths.dist.dirs.fonts %>/*'
     },
 
-    // Detects special construction (blocks) in the HTML files and update the grunt config to run 
-    // concat/uglify/cssmin/requirejs on the files referenced in the block. Does not change the HTML.
+    // Reads HTML for usemin blocks to enable smart builds that automatically
+    // concat, minify and revision files. Creates configurations in memory so
+    // additional tasks can operate on them. Does not change the HTML.
     useminPrepare: {
       html: '<%= paths.client.files.index %>',
       options: {
-        dest: '<%= paths.dist.tld %>'
+        dest: '<%= paths.dist.tld %>',
+        staging: '<%= paths.compiled.tld %>'
       }
     },
 
     // Replaces references to non-optimized scripts or stylesheets in html files
+    // based on rev and the useminPrepare configuration
     usemin: {
-      html: ['<%= paths.dist.tld %>/{,*/}*.html'],
-      css: ['<%= paths.dist.dirs.styles %>/{,*/}*.css'],
       options: {
-        dirs: ['<%= paths.dist.tld %>']
-      }
+        assetsDirs: [
+          // List of directories to look for revved version of the assets referenced in the currently looked at file.
+          '<%= paths.dist.tld %>'
+        ],
+        patterns: {
+          js: [[/(images\/\w+\.(png|jpg|jpeg|gif|webp|svg))/, 'Replacing reference to images in js files']]
+        }
+      },
+      html: [
+        '<%= paths.dist.tld %>/{,*/}*.html',
+        // '<%= paths.dist.tld %>/app/**/*.tpl.html',
+      ],
+      css: [
+        '<%= paths.dist.dirs.styles %>/*.css'
+        // '<%= paths.compiled.tld %>/styles/{,*}/*.css'
+      ],
+      js: [
+        '<%= paths.dist.dirs.scripts %>/*.templates.js'
+      ]
     },
 
+    // The following *-min tasks produce minified files in the dist folder
     imagemin: {
       dist: {
         files: [{
           expand: true,
           cwd: '<%= paths.client.dirs.images %>',
-          src: '{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+          src: '{,*/}*.{png,jpg,jpeg,gif,webp}',
+          dest: '<%= paths.dist.dirs.images %>'
+        }]
+      }
+    },
+
+    svgmin: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= paths.client.dirs.images %>',
+          src: '{,*/}*.svg',
           dest: '<%= paths.dist.dirs.images %>'
         }]
       }
@@ -237,64 +320,98 @@ module.exports = function (grunt) {
     htmlmin: {
       dist: {
         options: {
-          // removeComments: true,
-          // collapseWhitespace: true, //https://github.com/yeoman/grunt-usemin/issues/44
+          removeCommentsFromCDATA: true,
+          collapseBooleanAttributes: true,
+          removeOptionalTags: true,
+          // collapseWhitespace: true
         },
         files: {
-          '<%= paths.dist.tld %>/index.html': '<%= paths.client.files.index %>'
+          '<%= paths.dist.tld %>/index.html': '<%= paths.client.tld %>/index.html'
         }
+      }
+    },
+
+    // Allow the use of non-minsafe AngularJS files. Automatically makes it
+    // minsafe compatible so Uglify does not destroy the ng references
+    ngmin: {
+      compiled: {
+        files: [{
+          expand: true,
+          cwd: '<%= paths.compiled.tld %>/concat/scripts',
+          src: [
+            // List of files that need to be made min-safe
+            // Should probably only be your app files
+            'app.concat.js'
+          ],
+          dest: '<%= paths.compiled.tld %>/concat/scripts'
+        }]
+      }
+    },
+
+    // Replace Google CDN references
+    cdnify: {
+      dist: {
+        html: ['<%= paths.dist.tld %>/*.html']
       }
     },
 
     // Put files not handled in other tasks here
     copy: {
 
-      // Copy app images from app -> dist
-      // images: {
-      //   files: [{
-      //     expand: true,
-      //     cwd: '<%= paths.client.tld %>',
-      //     // src: 'images/{,*/}*.{png,jpg,gif,webp,svg}',
-      //     src: 'assets/images/**/*.{png,jpg,gif,webp,svg}',
-      //     dest: '<%= paths.dist.dirs.images %>'
-      //   }]
-      // },
+      dist: {
+        files: [
 
-      // Copy generated images from compiled -> dist
-      generated: {
-        files: [{
-          cwd: '<%= paths.compiled.tld %>/images',
-          src: ['generated/*'],
-          dest: '<%= paths.dist.dirs.images %>',
-        }]
+          // Copy fonts from app -> dist          
+          {
+            expand: true,
+            cwd: '<%= paths.client.tld %>/assets/fonts',
+            src: '*.{woff,svg,eot,ttf}',
+            dest: '<%= paths.dist.dirs.fonts %>'
+          },
+
+          // Copy ng-templates from app -> dist/app
+          // {
+          //   expand: true,
+          //   cwd: '<%= paths.client.tld %>/app',
+          //   src: '**/*.tpl.html',
+          //   dest: '<%= paths.dist.tld %>/app'
+          // },
+
+          // Copy video files from app -> dist
+          {
+            expand: true,
+            cwd: '<%= paths.client.dirs.videos %>/',
+            src: '*.{mp4,webm}',
+            dest: '<%= paths.dist.dirs.videos %>'
+          },
+
+          // Copy various files from app -> dist
+          {
+            expand: true,
+            cwd: '<%= paths.client.tld %>',
+            src: ['.htaccess', '*.{ico,png,txt}'],
+            dest: '<%= paths.dist.tld %>'
+          },
+
+          // Copy various vendor files from app -> dist
+          {
+            expand: true,
+            cwd: '<%= paths.client.tld %>/vendor',
+            src: '**/*.swf',
+            dest: '<%= paths.dist.tld %>/vendor'
+          }
+        ]
       },
 
-      // Copy fonts from app -> dist
-      fonts: {
-        files: [{
-          expand: true,
-          cwd: '<%= paths.client.tld %>',
-          src: 'assets/fonts/*',
-          dest: '<%= paths.dist.dirs.fonts %>'
-        }]
-      },
-
-      // Copy various files from app -> dist
-      other: {
-        files: [{
-          expand: true,
-          cwd: '<%= paths.client.tld %>',
-          src: ['.htaccess', '*.{ico,png,txt}'],
-          dest: '<%= paths.dist.tld %>'
-        }]
-      },
-
-      // copy client/dist directory to heroku/client
+      // Copy dist directory to heroku/client
       heroku: {
         files: [{
           expand: true,
           cwd: '<%= paths.dist.tld %>',
-          src: ['**/*'],
+          src: [
+            '**/*',
+            '!app/*'
+          ],
           dest: '<%= paths.heroku.dirs.client %>'
         }]
       }
@@ -302,9 +419,70 @@ module.exports = function (grunt) {
 
     // Tasks to run concurrently to speed up the build process
     concurrent: {
-      dev: ['compass:dev'],
-      test: ['compass:dev'],
-      dist: ['compass:dist', 'imagemin', 'htmlmin']
+      server: [
+        'compass:server'
+      ],
+      test: [
+        'compass:server'
+      ],
+      dist: [
+        // 'compass:dist',
+        'imagemin',
+        'svgmin'
+      ]
+    },
+
+    // By default, your `index.html`'s <!-- Usemin block --> will take care of
+    // minification. These next options can be used if you do not wish
+    // to use the Usemin blocks.
+    // cssmin: {
+    //   dist: {
+    //     files: {
+    //       '<%= paths.dist.tld %>/styles/main.css': [
+    //         '<%= paths.compiled.tld %>/styles/{,*/}*.css',
+    //       ]
+    //     }
+    //   }
+    // },
+
+    // Optimize JS not handled by usemin and useminPrepare
+    uglify: {
+      templates: {
+        files: {
+          '<%= paths.dist.dirs.scripts %>/app.templates.js' : '<%= paths.dist.dirs.scripts %>/app.templates.js'
+        }
+      }
+    },
+
+    // concat: {
+    //   dist: {}
+    // },
+
+    // Convert Angular templates to '.js'
+    ngtemplates: {
+      options: {
+        module: 'particle.templates', //  needs to match the name of an existing angular module
+        htmlmin: {
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          removeComments: true, // Only if you don't use comment directives!
+          removeEmptyAttributes: true,
+          removeRedundantAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true
+        }
+      },
+      server: {
+        cwd: '<%= paths.client.tld %>/app',
+        src: ['**/*.tpl.html'],
+        dest: '<%= paths.compiled.tld %>/scripts/app.templates.js'
+      },
+      dist: {
+        cwd: '<%= paths.client.tld %>/app',
+        src: ['**/*.tpl.html'],
+        dest: '<%= paths.dist.dirs.scripts %>/app.templates.js'
+      }
     },
 
     karma: {
@@ -313,54 +491,66 @@ module.exports = function (grunt) {
         singleRun: true
       }
     },
-
-    cdnify: {
-      dist: {
-        html: ['<%= paths.dist.tld %>/*.html']
-      }
-    },
-
-    // Make all AngularJS files min safe
-    ngmin: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: '<%= paths.dist.dirs.scripts %>',
-          src: '*.js',
-          dest: '<%= paths.dist.dirs.scripts %>'
-        }]
-      }
-    },
-
-    // Concat JS files not handled by usemin and useminPrepare
-    concat: {},
-
-    // Optimize JS not handled by usemin and useminPrepare
-    uglify: {},
-
-    // Convert Angular templates to '.js'
-    ngtemplates: {
-      options: {
-        module: {
-          name: 'templates',
-          define: true
-        },
-        base: '<%= paths.client.tld %>/app/' // template names begin after this
-      },
-      dev: {
-        src: ['<%= paths.client.files.templates %>'],
-        dest: '<%= paths.compiled.tld %>/scripts/app.templates.js'
-      },
-      dist: {
-        src: ['<%= paths.client.files.templates %>'],
-        dest: '<%= paths.dist.dirs.scripts %>/app.templates.js'
-      }
-    }
   });
 
 
   /**
-   * Load all dev grunt task dependencies
+   * Register all Grunt Tasks
    */
-  require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+
+  grunt.registerTask('serve', function (target) {
+    if (target === 'dist') {
+      return grunt.task.run(['build', 'connect:dist:keepalive']);
+    }
+
+    grunt.task.run([
+      'clean:server',
+      'bower-install',
+      'concurrent:server',
+      'autoprefixer',
+      'ngtemplates:server',
+      'connect:livereload',
+      'watch'
+    ]);
+  });
+
+  grunt.registerTask('test', [
+    'clean:server',
+    'concurrent:test',
+    'autoprefixer',
+    'ngtemplates:server',
+    'connect:test',
+    'karma'
+  ]);
+
+  grunt.registerTask('build', [
+    'clean:dist',
+    'bower-install',
+    'copy:dist',
+    'compass:dist',
+    'concurrent:dist',
+    'useminPrepare',
+    'autoprefixer',
+    'concat',
+    'ngtemplates:dist',
+    'ngmin', // needs to be after concat
+    'cdnify',
+    'cssmin',
+    'htmlmin',
+    'uglify',
+    'rev',
+    'usemin', // run last
+  ]);
+
+  grunt.registerTask('dist', [
+    'newer:jshint',
+    // 'test', // temporarily disabled until tests are made
+    'build'
+  ]);
+
+  grunt.registerTask('heroku', [
+    'dist',
+    'clean:heroku',
+    'copy:heroku'
+  ]);
 };
