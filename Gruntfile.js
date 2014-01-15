@@ -2,7 +2,7 @@
 
 var
   path = require('path'),
-  liveReloadPort = 35729;
+  liveReloadPort = 35720;
 
 /** 
  * Directory and File Path Configuration
@@ -75,14 +75,14 @@ module.exports = function (grunt) {
     // Files to watch for changes in order to make the browser reload
     watch: {
       js: {
+        options: {
+          livereload: liveReloadPort
+        },
         files: [
           '<%= paths.client.files.scripts %>', // app scripts
           '<%= paths.compiled.tld %>/scripts/{,*/}*.js', // compiled scripts
         ],
         tasks: ['newer:jshint:all'],
-        options: {
-          livereload: true
-        }
       },
       jsTest: {
         files: ['test/spec/{,*/}*.js'],
