@@ -10,15 +10,17 @@
     "angular-route": "1.2.6",
     "angular-sanitize": "1.2.6",
     "angular-ui-utils": "~0.1.0",
-    "angular-ui-router": "~0.2.7",
+    "angular-ui-router": "git@github.com:angular-ui/ui-router.git#0.2.8-bowratic-tedium",
     "animate-css": "git@github.com:daneden/animate.css.git",
     "es5-shim": "~2.1.0",
     "lodash": "~2.4.1",
-    "restangular": "~1.2.2",
-    "skrollr": "~0.6.21"
+    "restangular": "~1.2.2"
   },
   "devDependencies": {
     "angular-mocks": "1.2.6",
     "angular-scenario": "1.2.6"
+  },
+  "resolutions": {
+    "angular": "1.2.10"
   }
 }
