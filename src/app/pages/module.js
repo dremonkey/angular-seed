@@ -9,3 +9,6 @@ angular.module('particle.pages', ['ui.router.compat', 'particle.pages.controller
         controller: 'HomeCtrl'
       });
   });
+
+  angular.module('particle.pages.controllers', []);
+  angular.module('particle.pages.directives', []);

@@ -18,7 +18,7 @@
     <!-- Needed by AngularUI Router to ensure resource links are correct-->
     <base href="/"></base>
 
-    <title>Scripted Bits</title>
+    <title>Particle Angular Seed</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="particle">
+  <body ng-app="particle" ng-controller="BaseCtrl" id="{{bodyId}}">
 
     <!--[if lt IE 7]>
       <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
@@ -46,8 +46,33 @@
       <script src="json3/lib/json3.min.js"></script>
     <![endif]-->
     
-    <!-- AngularJS Content -->
-    <div ui-view></div>
+    <div id="realm">
+      <div class="header">
+        <div class="container">
+          <ul class="nav nav-pills pull-right">
+            <li class="active"><a ng-href="#">Home</a></li>
+            <li><a ng-href="#">About</a></li>
+            <li><a ng-href="#">Contact</a></li>
+          </ul>
+          <h4 class="text-muted">
+            <a href="http://github.com/dremonkey/particle-angular-seed">github.com/dremonkey/particle-angular-seed</a>
+          </h4>
+        </div>
+      </div>
+
+      <!-- AngularJS Content -->
+      <div ui-view></div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <p>♥ for the Yeoman team whose yo angular generator was used to begin this</p>
+          </div>
+        </div>
+      </div>
+    </footer>
 
     <!-- build:js scripts/app.vendor.js -->
     <!-- bower:js -->
@@ -57,13 +82,11 @@
     <script src="components/angular-cookies/angular-cookies.js"></script>
     <script src="components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="components/angular-resource/angular-resource.js"></script>
-    <script src="components/angular-route/angular-route.js"></script>
     <script src="components/angular-sanitize/angular-sanitize.js"></script>
     <script src="components/angular-ui-utils/ui-utils.js"></script>
     <script src="components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="components/lodash/dist/lodash.compat.js"></script>
     <script src="components/restangular/dist/restangular.min.js"></script>
-    <script src="components/skrollr/src/skrollr.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -78,6 +101,7 @@
     <!-- home module -->
     <script src="app/pages/module.js"></script>
     <script src="app/pages/controllers/home.ctrl.js"></script>
+    <script src="app/pages/controllers/base.ctrl.js"></script>
     <script src="app/pages/directives/home.dir.js"></script>
     <!-- endbuild -->
 

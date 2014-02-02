@@ -9,8 +9,6 @@ angular.module('particle', [
 
 angular.module('particle')
 
-  // grunt-ngmin does not work with non-core providers so use the angular min-safe notation
-  // @see https://github.com/btford/ngmin/issues/35
   .config(function ($locationProvider, $urlRouterProvider) {
     
     $urlRouterProvider.otherwise('/');
@@ -18,9 +16,7 @@ angular.module('particle')
     // enable the HTML5 push/pop history API  
     $locationProvider.html5Mode(true);
   })
-
-  // grunt-ngmin does not work with non-core providers so use the angular min-safe notation
-  // @see https://github.com/btford/ngmin/issues/35
+  
   .run(function ($rootScope, $state, $stateParams) {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;

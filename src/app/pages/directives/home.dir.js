@@ -1,13 +1,14 @@
 'use strict';
 
-angular.module('particle.pages.directives', [])
+angular.module('particle.pages.directives')
+
   .directive('home', function () {
-    var directiveDefinitionObject = {
-
+    var def = {};
+    
+    def = {
       priority: 10,
-
       link: function () {}
     };
 
-    return directiveDefinitionObject;
+    return def;
   });
