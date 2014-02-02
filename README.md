@@ -3,6 +3,14 @@ Particle Angular Seed
 
 Simple Angular Seed for my client side needs.
 
+Usage
+--------
+
+- ```npm install``` to install node dependencies
+- ```bower install``` to install bower components
+- ```grunt serve``` to start the development server
+- ```grunt serve:dist``` to run the distribution build task and start the server
+
 Features
 --------
 
