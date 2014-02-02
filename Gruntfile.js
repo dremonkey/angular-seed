@@ -447,6 +447,10 @@ module.exports = function (grunt) {
 
     // Optimize JS not handled by usemin and useminPrepare
     uglify: {
+      options: {
+        // Uglify can cause problem sometimes, use `mange: false`
+        // mangle: false
+      },
       templates: {
         files: {
           '<%= paths.dist.dirs.scripts %>/app.templates.js' : '<%= paths.dist.dirs.scripts %>/app.templates.js'
