@@ -2,7 +2,7 @@
   "name": "particle-angular-seed",
   "version": "0.0.1",
   "dependencies": {
-    "angular": "~1.2.8",
+    "angular": "~1.2.10",
     "angular-animate": "~1.2.5",
     "angular-cookies": "1.2.6",
     "angular-bootstrap": "~0.9.0",
