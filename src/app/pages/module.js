@@ -6,7 +6,10 @@ angular.module('particle.pages', ['ui.router.compat', 'particle.pages.controller
       .state('home', {
         url: '/',
         templateUrl: 'pages/templates/home.tpl.html',
-        controller: 'HomeCtrl'
+        controller: 'HomeCtrl',
+        data: {
+          bodyId: 'home'
+        }
       });
   });
 
