@@ -6,7 +6,8 @@ module.exports = {
     html: '<%= paths.client.tld %>/index.html',
     ignorePath: 'src/',
     exclude: [
-      /jquery/
+      /jquery/,
+      /sass-bootstrap/
     ]
   }
 };
