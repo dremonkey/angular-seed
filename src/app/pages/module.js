@@ -10,6 +10,15 @@ angular.module('particle.pages', ['ui.router.compat', 'particle.pages.controller
         data: {
           bodyId: 'home'
         }
+      })
+
+      .state('about', {
+        url: '/about',
+        templateUrl: 'pages/templates/about.tpl.html',
+        controller: 'HomeCtrl',
+        data: {
+          bodyId: 'about'
+        }
       });
   });
 
