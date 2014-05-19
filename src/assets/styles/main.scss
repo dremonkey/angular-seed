@@ -17,6 +17,10 @@
 // --------------------------------------------
 @import "partials/variables";
 
+// Import Bootstrap
+// --------------------------------------------
+@import "sass-bootstrap/lib/bootstrap";
+
 // App Styling that can be overridden
 // --------------------------------------------
 @import "partials/sticky-footer";
