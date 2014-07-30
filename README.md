@@ -11,6 +11,34 @@ Usage
 - ```grunt serve``` to start the development server
 - ```grunt serve:dist``` to run the distribution build task and start the server
 
+Application Architecture [work in progress]
+--------
+Application architecture follows this [styleguide](http://toddmotto.com/opinionated-angular-js-styleguide-for-teams/) pretty closely. Rules being used/followed listed below:
+
+#### General
+- Module method functions
+- Reserve $ or $$ for internal angular objects/functions only
+- Inject Angular providers/objects before custom ones
+- Use the [ng-annotate](https://github.com/olov/ng-annotate) keyword @ngInject to instruct things that need annotating
+- Use IIFE to avoid polluting the global namespace
+
+#### Controller Specific
+- ControllerAs syntax
+- Avoid controller logic in favor of fat services/factories
+- Controllers should be class-like, i.e. use this
+
+#### Service Specific
+- Services (like controllers) should be class-like
+- Should contain "services" or "srv" in the name
+
+#### Factory Specific
+- Factory is a pattern/implementation, and shouldn't be part of the provider's name
+- Should contain "services" or "srv" in the name
+- Create an Object with the same name inside the factory function and return that object
+
+#### Routing Specific
+- Resolve promises in the router
+
 Features
 --------
 
