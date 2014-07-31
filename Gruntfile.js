@@ -61,7 +61,8 @@ module.exports = function (grunt) {
     'autoprefixer',
     'concat',
     'ngtemplates:dist',
-    'ngmin', // needs to be after concat
+    // 'ngmin', // needs to be after concat... removed in favor of ngAnnotate
+    'ngAnnotate', // needs to be after concat
     'cssmin',
     'htmlmin',
     'uglify',

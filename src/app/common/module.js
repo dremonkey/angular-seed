@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('particle.common', ['particle.common.utils', 'particle.common.directives']);
+angular.module('app.common', ['app.common.utils', 'app.common.directives']);
 
-angular.module('particle.common.utils', []);
-angular.module('particle.common.directives', ['particle.common.directives.skrollr']);
+angular.module('app.common.utils', []);
+angular.module('app.common.directives', []);

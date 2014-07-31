@@ -7,7 +7,7 @@ module.exports = {
     ignorePath: 'src/',
     exclude: [
       /jquery/,
-      /sass-bootstrap/
+      /bootstrap-sass-official/
     ]
   }
 };

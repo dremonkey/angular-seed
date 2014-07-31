@@ -18,7 +18,7 @@
     <!-- For Deeplinking -->
     <base href="/"></base>
 
-    <title>Particle Angular Seed</title>
+    <title>Angular Seed App</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
@@ -31,11 +31,10 @@
     <!-- endbuild -->
 
     <!-- build:css(.tmp) styles/app.main.css -->
-    <link rel="stylesheet" href="styles/bootstrap-v3.0.2/bootstrap.css">
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="particle" ng-controller="BaseCtrl" id="{{bodyId}}">
+  <body ng-app="app" ng-controller="AppCtrl as app" id="app.bodyId">
 
     <!--[if lt IE 7]>
       <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
@@ -87,7 +86,7 @@
     <script src="components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="components/lodash/dist/lodash.compat.js"></script>
     <script src="components/gsap/src/uncompressed/TweenMax.js"></script>
-    <script src="components/ng-Fx/dist/ng-Fx.js"></script>
+    <script src="components/ng-Fx/dist/ngFx.js"></script>
     <script src="components/restangular/dist/restangular.min.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
@@ -97,14 +96,20 @@
 
     <!-- common module -->
     <script src="app/common/module.js"></script>
-    <script src="app/common/services/utils.srv.js"></script>
-    <script src="app/common/directives/skrollr.dir.js"></script>
+    
+    <script src="app/common/services/lodashService.js"></script>
+    <script src="app/common/services/utilService.js"></script>
+    
+    <script src="app/common/directives/skrollrDirective.js"></script>
 
     <!-- pages module -->
     <script src="app/pages/module.js"></script>
-    <script src="app/pages/controllers/base.ctrl.js"></script>
-    <script src="app/pages/controllers/home.ctrl.js"></script>
-    <script src="app/pages/directives/home.dir.js"></script>
+    <script src="app/pages/controllers/appCtrl.js"></script>
+    <script src="app/pages/controllers/homeCtrl.js"></script>
+    
+    <script src="app/pages/services/appService.js"></script>
+    
+    <script src="app/pages/directives/homeDirective.js"></script>
     <!-- endbuild -->
 
     <script src="scripts/app.templates.js"></script>
