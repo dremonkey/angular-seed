@@ -4,7 +4,7 @@
 module.exports = {
   templates: {
     files: {
-      '<%= paths.dist.tld %>/scripts/app.templates.js' : '<%= paths.dist.tld %>/scripts/app.templates.js'
+      '<%= paths.dist.tld %>/scripts/ngtemplates.js' : '<%= paths.dist.tld %>/scripts/ngtemplates.js'
     }
   }
 };
