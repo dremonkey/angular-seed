@@ -2,7 +2,7 @@
 
 module.exports = {
   options: {
-    module: 'app.templates', //  needs to match the name of an existing angular module
+    module: 'ngtemplates', //  needs to match the name of an existing angular module
     htmlmin: {
       collapseBooleanAttributes: true,
       collapseWhitespace: true,

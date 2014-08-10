@@ -11,16 +11,12 @@
  * comment-generated docs 
  */
 
-(function() {
+function Service () {
+  var _Service = {};
+ 
+  _Service.someValue = '';
+  _Service.someMethod = function () {};
+}
 
-  function Service () {
-    var _Service = {};
-   
-    _Service.someValue = '';
-    _Service.someMethod = function () {};
-  }
-
-  angular.module('app')
-    .factory('Service', Service);
-
-})();
+angular.module('app')
+  .factory('Service', Service);
