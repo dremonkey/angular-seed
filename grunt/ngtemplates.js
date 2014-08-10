@@ -17,11 +17,11 @@ module.exports = {
   serve: {
     cwd: '<%= paths.client.tld %>/app',
     src: ['**/*.tpl.html'],
-    dest: '<%= paths.compiled.tld %>/scripts/app.templates.js'
+    dest: '<%= paths.compiled.tld %>/scripts/ngtemplates.js'
   },
   dist: {
     cwd: '<%= paths.client.tld %>/app',
     src: ['**/*.tpl.html'],
-    dest: '<%= paths.dist.tld %>/scripts/app.templates.js'
+    dest: '<%= paths.dist.tld %>/scripts/ngtemplates.js'
   }
 };
